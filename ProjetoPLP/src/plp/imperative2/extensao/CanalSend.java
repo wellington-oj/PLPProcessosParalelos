@@ -10,8 +10,12 @@ import plp.imperative1.memory.EntradaVaziaException;
 
 public class CanalSend extends ControleCanal{
 
+	Id id;
+	Expressao exp;
+	
 	public CanalSend(Id id, Expressao exp) {
-		// TODO Auto-generated constructor stub
+		this.id = id;
+		this.exp = exp;
 	}
 
 	@Override
@@ -19,16 +23,17 @@ public class CanalSend extends ControleCanal{
 			AmbienteExecucaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized (id) {
+			ambiente.changeValor(id, exp.avaliar(ambiente));
+			return ambiente;
+		}
 	}
 
 	@Override
 	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
