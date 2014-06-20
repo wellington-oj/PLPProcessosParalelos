@@ -10,25 +10,37 @@ import plp.imperative1.memory.EntradaVaziaException;
 
 public class Parallel implements Comando{
 
-	public Parallel(SequenciaComando comandos) {
-		// TODO Auto-generated constructor stub
+	Comando c1,c2;
+
+	public Parallel(Comando c1,Comando c2) {
+		this.c1 = c1;
+		this.c2 = c2;
 	}
 
 	@Override
 	public AmbienteExecucaoImperativa executar(
 			AmbienteExecucaoImperativa ambiente)
-			throws IdentificadorJaDeclaradoException,
-			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return null;
+					throws IdentificadorJaDeclaradoException,
+					IdentificadorNaoDeclaradoException, EntradaVaziaException {
+		Thread t1 = new ThreadCommand(c1, ambiente);
+		Thread t2 = new ThreadCommand(c2, ambiente);
+		
+		t1.start(); t2.start();
+		
+		try {
+			t2.join(); t1.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		return ambiente;
 	}
 
 	@Override
 	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return false;
+		return c1.checaTipo(ambiente) && c2.checaTipo(ambiente);
 	}
 
 }

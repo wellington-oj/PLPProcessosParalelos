@@ -292,7 +292,9 @@ Comando PComando() :
     (
         LOOKAHEAD (PComandoSimples() <SEMICOLON>)
         	retorno = PSequenciaComando()
-      | retorno = PComandoSimples()
+      | LOOKAHEAD (PComandoSimples() <PARALLEL>)
+        	retorno = PParallel()
+      |retorno = PComandoSimples()
    	)
     {
         return retorno;
@@ -545,6 +547,7 @@ Expressao PExpBinaria() :
 
 /**TODO */
 
+
 DeclaracaoCanal PDeclaracaoCanal() :
 {
 	Id id;
@@ -588,19 +591,17 @@ CanalGet PCanalGet() :
 	{return new CanalGet(id);}
 }
 
-
-Parallel PParallel():
+Parallel PParallel() :
 {
-	SequenciaComando comandos;
+	Comando c1;
+	Comando c2;
 }
 {
-	<PARALLEL> <LPAREN> comandos = PSequenciaComando() <RPAREN>
-	{
-		return new Parallel(comandos);
-	}
+	c1 = PComandoSimples()
+	<PARALLEL>
+	c2 = PComando()
+	{return new Parallel(c1, c2);}
 }
-
-
 
 /** FIM BLOCO NOVO */
 
@@ -712,7 +713,6 @@ Comando PComandoSimples() :
       | retorno = PIfThenElse()
       | retorno = PIO()
       | retorno = PControleCanal()
-      | retorno = PParallel()
       | <LPAREN> retorno = PComando() <RPAREN>
       | retorno = PChamadaProcedimento()
    	)

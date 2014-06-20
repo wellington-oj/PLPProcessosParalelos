@@ -22,6 +22,7 @@ public interface Comando {
 	 *            valores.
 	 * 
 	 * @return o ambiente modificado pela execução do comando.
+	 * @throws InterruptedException 
 	 */
 	AmbienteExecucaoImperativa executar(AmbienteExecucaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,

@@ -7,23 +7,18 @@ import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative1.memory.EntradaVaziaException;
 
-public class ControleCanal implements Comando{
+public abstract class ControleCanal implements Comando{
 
 	@Override
-	public AmbienteExecucaoImperativa executar(
+	public abstract AmbienteExecucaoImperativa executar(
 			AmbienteExecucaoImperativa ambiente)
-			throws IdentificadorJaDeclaradoException,
-			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+					throws IdentificadorJaDeclaradoException,
+					IdentificadorNaoDeclaradoException, EntradaVaziaException ;
 
 	@Override
-	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
+	public abstract boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
-			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+			IdentificadorNaoDeclaradoException, EntradaVaziaException;
+
 
 }
