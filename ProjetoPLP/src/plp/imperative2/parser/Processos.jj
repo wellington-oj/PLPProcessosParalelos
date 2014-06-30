@@ -557,21 +557,6 @@ DeclaracaoCanal PDeclaracaoCanal() :
 	{return new DeclaracaoCanal(id);}
 }
 
-
-ControleCanal PControleCanal() :
-{
-	ControleCanal retorno;
-}
-{
-	(		retorno = PCanalSend()
-		| retorno = PCanalGet()
-	)
-	{
-		return retorno;
-	}
-	
-}
-
 CanalSend PCanalSend() :
 {
 	Id id;
@@ -690,8 +675,9 @@ Expressao PExpressao() :
 	  		retorno = PExpUnaria()
 	  | LOOKAHEAD (PExpPrimaria() (<OR> | <AND> | <MINUS> | <PLUS> | <EQ>)) 
 	  		retorno = PExpBinaria()
-	  |
-	    retorno = PExpPrimaria()
+	  | LOOKAHEAD( <GET> id = PId() )
+	  	retorno = PCanalGet()
+	 |  retorno = PExpPrimaria()
 	)
 	{
 		return retorno;
@@ -712,7 +698,7 @@ Comando PComandoSimples() :
       | retorno = PWhile()
       | retorno = PIfThenElse()
       | retorno = PIO()
-      | retorno = PControleCanal()
+      | retorno = PCanalSend()
       | <LPAREN> retorno = PComando() <RPAREN>
       | retorno = PChamadaProcedimento()
    	)
