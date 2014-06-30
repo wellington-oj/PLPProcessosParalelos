@@ -1,47 +1,33 @@
 package plp.imperative2.extensao;
 
-import plp.expressions1.expression.ValorInteiro;
-import plp.expressions1.util.Tipo;
-import plp.expressions2.expression.Expressao;
 import plp.expressions2.expression.Id;
-import plp.expressions2.expression.Valor;
-import plp.expressions2.memory.AmbienteCompilacao;
-import plp.expressions2.memory.AmbienteExecucao;
-import plp.expressions2.memory.VariavelJaDeclaradaException;
-import plp.expressions2.memory.VariavelNaoDeclaradaException;
+import plp.expressions2.memory.IdentificadorJaDeclaradoException;
+import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
+import plp.imperative1.memory.AmbienteCompilacaoImperativa;
+import plp.imperative1.memory.AmbienteExecucaoImperativa;
+import plp.imperative1.memory.EntradaVaziaException;
 
-public class CanalGet implements Expressao{
+public class CanalGet extends ControleCanal{
 
-	Id id;
-	
 	public CanalGet(Id id) {
-		this.id = id;
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public Valor avaliar(AmbienteExecucao amb)
-			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		synchronized (id) {
-			Valor args = amb.get(id);
-			amb.map(id, (Valor) new ValorInteiro(0));
-			return args;			
-		}
+	public AmbienteExecucaoImperativa executar(
+			AmbienteExecucaoImperativa ambiente)
+			throws IdentificadorJaDeclaradoException,
+			IdentificadorNaoDeclaradoException, EntradaVaziaException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public boolean checaTipo(AmbienteCompilacao amb)
-			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		boolean result = true;
-		amb.get(id); // se estiver no ambiente, entao esta ok.
-		return result;
+	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
+			throws IdentificadorJaDeclaradoException,
+			IdentificadorNaoDeclaradoException, EntradaVaziaException {
+		// TODO Auto-generated method stub
+		return false;
 	}
-
-	@Override
-	public Tipo getTipo(AmbienteCompilacao amb)
-			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		return amb.get(id);
-	}
-
-
 
 }
