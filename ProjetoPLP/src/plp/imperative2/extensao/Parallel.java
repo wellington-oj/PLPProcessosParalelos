@@ -22,16 +22,27 @@ public class Parallel implements Comando{
 			AmbienteExecucaoImperativa ambiente)
 					throws IdentificadorJaDeclaradoException,
 					IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		Thread t1 = new ThreadCommand(c1, ambiente);
-		Thread t2 = new ThreadCommand(c2, ambiente);
 		
+		Thread t1 = new ThreadCommand(c1, (AmbienteExecucaoImperativa) ambiente.clone());
+		Thread t2 = new ThreadCommand(c2, (AmbienteExecucaoImperativa) ambiente.clone());
+
 		t1.start(); t2.start();
-		
+
 		try {
 			t2.join(); t1.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		synchronized (this) {
+			while(t1.isAlive() || t2.isAlive()){
+				try {
+					wait(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}	
 		
 		return ambiente;
 	}

@@ -1,13 +1,10 @@
 package plp.imperative2.declaration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import plp.expressions1.util.Tipo;
 import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
-import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.util.Lista;
+import plp.imperative2.memory.AmbienteCompilacaoImperativa2;
+import plp.imperative2.memory.AmbienteExecucaoImperativa2;
 
 public class ListaDeclaracaoParametro extends Lista<DeclaracaoParametro> {
 
@@ -18,19 +15,32 @@ public class ListaDeclaracaoParametro extends Lista<DeclaracaoParametro> {
 		super(declaracao, null);
 	}
 
-	public ListaDeclaracaoParametro(DeclaracaoParametro declaracao,
-			ListaDeclaracaoParametro listaDeclaracao) {
+	public ListaDeclaracaoParametro(DeclaracaoParametro declaracao, ListaDeclaracaoParametro listaDeclaracao) {
 		super(declaracao, listaDeclaracao);
 	}
 
-	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
+	public AmbienteExecucaoImperativa2 elabora(
+			AmbienteExecucaoImperativa2 ambiente) {
+		AmbienteExecucaoImperativa2 resposta;
+		if (getHead() != null) {
+			if (getTail() != null) {
+				resposta = ((ListaDeclaracaoParametro)getTail()).elabora(getHead().elabora(ambiente));
+			} else {
+				resposta = getHead().elabora(ambiente);
+			}
+		} else {
+			resposta = ambiente;
+		}
+		return resposta;
+	}
+
+	public boolean checaTipo(AmbienteCompilacaoImperativa2 ambiente)
 			throws VariavelNaoDeclaradaException {
 		boolean resposta;
 		if (getHead() != null) {
 			if (getTail() != null) {
 				resposta = getHead().checaTipo(ambiente)
-						&& ((ListaDeclaracaoParametro) getTail())
-								.checaTipo(ambiente);
+						&& ((ListaDeclaracaoParametro)getTail()).checaTipo(ambiente);
 			} else {
 				resposta = getHead().checaTipo(ambiente);
 			}
@@ -49,41 +59,21 @@ public class ListaDeclaracaoParametro extends Lista<DeclaracaoParametro> {
 	 *            tipo.
 	 * @return o ambiente modificado pela declaração do parametro.
 	 */
-	public AmbienteCompilacaoImperativa elabora(
-			AmbienteCompilacaoImperativa ambiente)
+	public AmbienteCompilacaoImperativa2 declaraParametro(
+			AmbienteCompilacaoImperativa2 ambiente)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		AmbienteCompilacaoImperativa resposta;
+		AmbienteCompilacaoImperativa2 resposta;
 		if (getHead() != null) {
 			if (getTail() != null) {
-				resposta = ((ListaDeclaracaoParametro) getTail())
-						.elabora(getHead().elabora(ambiente));
+				resposta = ((ListaDeclaracaoParametro)getTail()).declaraParametro(
+						getHead().declaraParametro(ambiente));
 			} else {
-				resposta = getHead().elabora(ambiente);
+				resposta = getHead().declaraParametro(ambiente);
 			}
 		} else {
 			resposta = ambiente;
 		}
 		return resposta;
-	}
-
-	public List<Tipo> getTipos() {
-		ArrayList<Tipo> retorno = new ArrayList<Tipo>();
-
-		DeclaracaoParametro headTemp = this.head;
-		Lista<DeclaracaoParametro> tailTemp = this.tail;
-
-		while (headTemp != null) {
-			retorno.add(head.getTipo());
-
-			if (tailTemp != null) {
-				headTemp = tailTemp.getHead();
-				tailTemp = tailTemp.getTail();
-			} else {
-				headTemp = null;
-			}
-		}
-
-		return retorno;
 	}
 
 }

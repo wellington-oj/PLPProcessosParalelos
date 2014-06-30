@@ -1,4 +1,4 @@
-package plp.imperative2;
+package plp.imperative1;
 
 import plp.expressions2.memory.IdentificadorJaDeclaradoException;
 import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
@@ -11,7 +11,7 @@ import plp.imperative1.memory.ListaValor;
 public class Programa {
 
     private Comando comando;
-   
+
     public Programa(Comando comando){
         this.comando = comando;
     }
@@ -28,11 +28,10 @@ public class Programa {
      *  a tail de valores de entrada do programa.
      *
      */ 
-    public ListaValor executar(AmbienteExecucaoImperativa ambiente) 
-        	throws IdentificadorJaDeclaradoException, IdentificadorNaoDeclaradoException, 
-			EntradaVaziaException {
-        ambiente = comando.executar(ambiente);
-        return ambiente.getSaida();
+    public ListaValor executar(AmbienteExecucaoImperativa ambienteExecucao) 
+        throws IdentificadorJaDeclaradoException, IdentificadorNaoDeclaradoException, EntradaVaziaException {
+        ambienteExecucao = comando.executar(ambienteExecucao);
+        return ambienteExecucao.getSaida();
     }
 
     /**
@@ -46,10 +45,9 @@ public class Programa {
      *  a tail de valores de entrada do programa.
      *
      */
-    public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
-        	throws IdentificadorJaDeclaradoException, IdentificadorNaoDeclaradoException, 
-			EntradaVaziaException {
-        return comando.checaTipo(ambiente);
+    public boolean checaTipo(AmbienteCompilacaoImperativa ambienteCompilacao)
+        throws IdentificadorJaDeclaradoException, IdentificadorNaoDeclaradoException, EntradaVaziaException  {
+        return comando.checaTipo(ambienteCompilacao);
     }
-    
+
 }

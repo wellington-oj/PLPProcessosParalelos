@@ -1,5 +1,7 @@
 package plp.imperative2.command;
 
+import java.util.List;
+
 import plp.expressions1.util.Tipo;
 import plp.expressions2.expression.Id;
 import plp.expressions2.memory.IdentificadorJaDeclaradoException;
@@ -11,10 +13,10 @@ import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative1.memory.EntradaVaziaException;
 import plp.imperative1.memory.ListaValor;
-import plp.imperative2.declaration.DefProcedimento;
 import plp.imperative2.declaration.ListaDeclaracaoParametro;
+import plp.imperative2.memory.AmbienteCompilacaoImperativa2;
 import plp.imperative2.memory.AmbienteExecucaoImperativa2;
-import plp.imperative2.util.TipoProcedimento;
+import plp.imperative2.memory.Procedimento;
 
 public class ChamadaProcedimento implements Comando {
 
@@ -32,13 +34,7 @@ public class ChamadaProcedimento implements Comando {
 			throws IdentificadorNaoDeclaradoException,
 			IdentificadorJaDeclaradoException, EntradaVaziaException {
 		AmbienteExecucaoImperativa2 ambiente = (AmbienteExecucaoImperativa2) amb;
-		DefProcedimento procedimento = ambiente
-				.getProcedimento(nomeProcedimento);
-
-		/*
-		 * o incrementa e o restaura neste ponto servem para criar as variveis
-		 * que serao utilizadas pela execucao do procedimento
-		 */
+		Procedimento procedimento = ambiente.getProcedimento(nomeProcedimento);
 		ambiente.incrementa();
 		ListaDeclaracaoParametro parametrosFormais = procedimento
 				.getParametrosFormais();
@@ -48,7 +44,10 @@ public class ChamadaProcedimento implements Comando {
 				aux);
 		aux.restaura();
 		return aux;
-
+		/*
+		 * o incrementa e o restaura neste ponto servem para criar as variveis
+		 * que serao utilizadas pela execucao do procedimento
+		 */
 	}
 
 	/**
@@ -61,10 +60,8 @@ public class ChamadaProcedimento implements Comando {
 			throws VariavelJaDeclaradaException, VariavelNaoDeclaradaException {
 		ListaValor listaValor = parametrosReais.avaliar(ambiente);
 		while (listaValor.length() > 0) {
-			ambiente.map(parametrosFormais.getHead().getId(), listaValor
-					.getHead());
-			parametrosFormais = (ListaDeclaracaoParametro) parametrosFormais
-					.getTail();
+			ambiente.map(parametrosFormais.getHead().getId(), listaValor.getHead());
+			parametrosFormais = (ListaDeclaracaoParametro) parametrosFormais.getTail();
 			listaValor = (ListaValor) listaValor.getTail();
 		}
 		return ambiente;
@@ -84,13 +81,37 @@ public class ChamadaProcedimento implements Comando {
 	public boolean checaTipo(AmbienteCompilacaoImperativa amb)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException {
-
-		Tipo tipoProcedimento = amb.get(this.nomeProcedimento);
-
-		TipoProcedimento tipoParametrosReais = new TipoProcedimento(
-				parametrosReais.getTipos(amb));
-		return tipoProcedimento.eIgual(tipoParametrosReais);
-
+		AmbienteCompilacaoImperativa2 ambiente = (AmbienteCompilacaoImperativa2) amb;
+		boolean resposta;
+		ambiente.incrementa();
+		ListaDeclaracaoParametro parametrosFormais = ambiente
+				.getParametrosProcedimento(nomeProcedimento);
+		List<Tipo> tiposParametrosReais = parametrosReais.getTipos(ambiente);
+		// tem o mesmo numero de parametros formais e reais?
+		if (tiposParametrosReais.size() == parametrosFormais.length()) {
+			// a funcao tem algum parametro?
+			if (tiposParametrosReais.isEmpty()
+					|| parametrosFormais.getHead() == null) {
+				resposta = true;
+			} else {
+				resposta = true;
+				// tem parametros formais de tipos diferentes
+				// de parametros reais na ordem em que se apresentam?
+				for (Tipo tipoAtual : tiposParametrosReais) {
+					if (parametrosFormais == null)
+						break;
+					if (!tipoAtual.equals(parametrosFormais.getHead().getTipo())) {
+						resposta = false;
+						break;
+					}
+					parametrosFormais = (ListaDeclaracaoParametro) parametrosFormais.getTail();
+				}
+			}
+		} else {
+			resposta = false;
+		}
+		ambiente.restaura();
+		return resposta;
 	}
 
 }

@@ -12,4 +12,5 @@ public interface AmbienteExecucaoImperativa extends AmbienteExecucao {
         throws EntradaVaziaException;
     public void write(Valor v);
     public ListaValor getSaida();
+    public Object clone();
 }

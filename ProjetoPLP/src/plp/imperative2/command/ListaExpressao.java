@@ -7,48 +7,55 @@ import plp.expressions1.util.Tipo;
 import plp.expressions2.expression.Expressao;
 import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
-import plp.imperative1.memory.AmbienteCompilacaoImperativa;
-import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative1.memory.ListaValor;
 import plp.imperative1.util.Lista;
+import plp.imperative2.memory.AmbienteCompilacaoImperativa2;
+import plp.imperative2.memory.AmbienteExecucaoImperativa2;
 
-public class ListaExpressao extends Lista<Expressao> {
+public class ListaExpressao extends Lista<Expressao>{
+    
+    
+    public ListaExpressao (){
 
-	public ListaExpressao() {
+    }
 
-	}
+    public ListaExpressao(Expressao expressao){
+        super(expressao, new ListaExpressao());
+    }
 
-	public ListaExpressao(Expressao expressao) {
-		super(expressao, new ListaExpressao());
-	}
-
-	public ListaExpressao(Expressao expressao, ListaExpressao listaExpressao) {
+    public ListaExpressao(Expressao expressao, ListaExpressao listaExpressao){
 		super(expressao, listaExpressao);
-	}
+    }
+    
+      
+    public ListaValor avaliar(AmbienteExecucaoImperativa2 ambiente) 
+        throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+        if (length() >= 2) {
+            return new ListaValor(getHead().avaliar(ambiente), 
+                                  ((ListaExpressao) getTail()).avaliar(ambiente));
+        }
+        else if (length() == 1) {
+            return new ListaValor(getHead().avaliar(ambiente));
+        }
+        else { 
+            return new ListaValor();
+        }
+    }
+    
+    public List<Tipo> getTipos (AmbienteCompilacaoImperativa2 ambiente)
+        	throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 
-	public ListaValor avaliar(AmbienteExecucaoImperativa ambiente)
-			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		if (length() >= 2)
-			return new ListaValor(getHead().avaliar(ambiente),
-					((ListaExpressao) getTail()).avaliar(ambiente));
-		else if (length() == 1)
-			return new ListaValor(getHead().avaliar(ambiente));
-		else
-			return new ListaValor();
-	}
+        List<Tipo> result = new LinkedList<Tipo>();
 
-	public List<Tipo> getTipos(AmbienteCompilacaoImperativa ambiente)
-			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+        if (this.length() >= 2) {
+        	result.add(getHead().getTipo(ambiente));
+        	result.addAll(((ListaExpressao) getTail()).getTipos(ambiente));
+        }
+        else if (length() == 1) {
+            result.add(getHead().getTipo(ambiente));
+        }
+        return result;
+    }
 
-		List<Tipo> result = new LinkedList<Tipo>();
-
-		if (this.length() >= 2) {
-			result.add(getHead().getTipo(ambiente));
-			result.addAll(((ListaExpressao) getTail()).getTipos(ambiente));
-		} else if (length() == 1) {
-			result.add(getHead().getTipo(ambiente));
-		}
-		return result;
-	}
-
+    
 }

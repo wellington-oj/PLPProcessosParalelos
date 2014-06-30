@@ -44,7 +44,7 @@ public class ContextoExecucaoImperativa extends ContextoExecucao
     }
      
     public void write(Valor v){
-        saida = new ListaValor(v, saida);
+        saida.add(v);
     }
 
     /**
@@ -74,5 +74,21 @@ public class ContextoExecucaoImperativa extends ContextoExecucao
 			throw new VariavelNaoDeclaradaException(idArg);
 		}
     }
+    
+    public Object clone(){
+    	return null;
+    }
+
+	public ListaValor getEntrada() {
+		return entrada;
+	}
+
+	public void setEntrada(ListaValor entrada) {
+		this.entrada = entrada;
+	}
+
+	public void setSaida(ListaValor saida) {
+		this.saida = saida;
+	}
 }
 

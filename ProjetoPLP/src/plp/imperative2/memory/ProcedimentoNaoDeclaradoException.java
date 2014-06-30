@@ -1,15 +1,12 @@
 package plp.imperative2.memory;
 
 import plp.expressions2.expression.Id;
-import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
+import plp.expressions2.memory.IdentificadorJaDeclaradoException;
 
-public class ProcedimentoNaoDeclaradoException extends
-		IdentificadorNaoDeclaradoException {
+public class ProcedimentoNaoDeclaradoException extends IdentificadorJaDeclaradoException {
 
-	private static final long serialVersionUID = -5023666514074530307L;
-
-	public ProcedimentoNaoDeclaradoException(Id id) {
-		super("Procedimento " + id + " nao declarado.");
-	}
-
+  public ProcedimentoNaoDeclaradoException(Id id) {
+    super("Procedimento " + id + " nao declarado.");
+  }
+  
 }

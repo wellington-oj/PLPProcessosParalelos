@@ -20,10 +20,16 @@ public class ThreadCommand extends Thread{
 
     public void run() {
       try {
-        comando.executar(ambiente);
-      } catch (IdentificadorJaDeclaradoException identJaDecl) {
-      } catch (IdentificadorNaoDeclaradoException identNaoDecl) {
-      } catch (EntradaVaziaException entradaVazia) {
+        ambiente = comando.executar(ambiente);
+      } 
+      catch (IdentificadorJaDeclaradoException identJaDecl) {
+    	  identJaDecl.printStackTrace();
+      } 
+      catch (IdentificadorNaoDeclaradoException identNaoDecl) {
+    	  identNaoDecl.printStackTrace();
+      } 
+      catch (EntradaVaziaException entradaVazia) {
+    	  entradaVazia.printStackTrace();
       }
     }
 }

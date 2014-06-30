@@ -64,7 +64,7 @@ public class Imp2Parser {
             Programa programa = parser.Input();
             System.out.println("Imperativa 2 PLP Parser Version 0.0.1:  Imperativa2 program parsed successfully.");
             
-            if(programa.checaTipo(new ContextoCompilacaoImperativa(entrada))) {
+            if(programa.checaTipo(new ContextoCompilacaoImperativa2(entrada))) {
                 ListaValor saida = programa.executar(new ContextoExecucaoImperativa2(entrada));
                 System.out.println(saida);
             }
@@ -141,6 +141,8 @@ TOKEN : /* TOKENS DA EXTENSAO*/
 |   < PARALLEL: "par" >	
 |   < SEND: "send" >
 |   < GET: "get" >
+|   < TRY: "try" >
+
 }
 
 TOKEN : /* TOKENS DOS POSSÍVEIS TIPOS */
@@ -547,33 +549,62 @@ Expressao PExpBinaria() :
 
 /**TODO */
 
+IdCanal PIdCanal() :
+{
+	Token token;
+}
+{
+	token = <IDENTIFIER>
+	{
+		return new IdCanal(token.toString());
+	}
+}
 
 DeclaracaoCanal PDeclaracaoCanal() :
 {
-	Id id;
+	IdCanal id;
 }
 {
-  	<CANAL> id = PId()
+  	<CANAL> id = PIdCanal()
 	{return new DeclaracaoCanal(id);}
 }
 
 CanalSend PCanalSend() :
 {
-	Id id;
+	IdCanal id;
 	Expressao exp;
 }
 {
-  	<SEND> id = PId() exp = PExpressao()	{return new CanalSend(id,exp);}
+  	<SEND> id = PIdCanal() exp = PExpressao()	{return new CanalSend(id,exp);}
+}
+
+TryCanalSend PTryCanalSend() :
+{
+	IdCanal id;
+	Expressao exp;
+}
+{
+  	<TRY> <SEND> id = PIdCanal() exp = PExpressao()
+	{return new TryCanalSend(id,exp);}
 }
 
 
 CanalGet PCanalGet() :
 {
-	Id id;
+	IdCanal id;
 }
 {
-  	<GET> id = PId()
+  	<GET> id = PIdCanal()
 	{return new CanalGet(id);}
+}
+
+TryCanalGet PTryCanalGet() :
+{
+	IdCanal id;
+}
+{
+  	<TRY> <GET> id = PIdCanal()
+	{return new TryCanalGet(id);}
 }
 
 Parallel PParallel() :
@@ -675,8 +706,12 @@ Expressao PExpressao() :
 	  		retorno = PExpUnaria()
 	  | LOOKAHEAD (PExpPrimaria() (<OR> | <AND> | <MINUS> | <PLUS> | <EQ>)) 
 	  		retorno = PExpBinaria()
-	  | LOOKAHEAD( <GET> id = PId() )
+	  | LOOKAHEAD( <GET> id = PIdCanal() )
 	  	retorno = PCanalGet()
+	  | LOOKAHEAD( <TRY> <GET> id = PIdCanal() )
+	  	retorno = PTryCanalGet()
+	  | LOOKAHEAD( <TRY> <SEND> id = PIdCanal() )
+	  	retorno = PTryCanalSend()
 	 |  retorno = PExpPrimaria()
 	)
 	{
@@ -742,7 +777,10 @@ Declaracao PDeclaracao():
 		  LOOKAHEAD(PDeclaracaoVariavel() <COMMA>)
            retorno = PDeclaracaoComposta()
           |LOOKAHEAD(PDeclaracaoProcedimento() <COMMA>)
-           retorno = PDeclaracaoComposta() 
+           retorno = PDeclaracaoComposta()
+          |LOOKAHEAD(PDeclaracaoCanal() <COMMA>)
+           retorno = PDeclaracaoComposta()
+          | retorno = PDeclaracaoCanal()
 		  | retorno = PDeclaracaoVariavel()
 		  | retorno = PDeclaracaoProcedimento()
           | <LPAREN> retorno = PDeclaracao() <RPAREN>   		 
@@ -762,6 +800,9 @@ DeclaracaoComposta PDeclaracaoComposta():
 	 
 	 |  LOOKAHEAD(PDeclaracaoProcedimento() <COMMA>)
 	 d1 = PDeclaracaoProcedimento() <COMMA> d2 = PDeclaracao()
+
+	  |  LOOKAHEAD(PDeclaracaoCanal() <COMMA>)
+	 d1 = PDeclaracaoCanal() <COMMA> d2 = PDeclaracao()
 	)
 	
 	{return new DeclaracaoComposta(d1, d2);}

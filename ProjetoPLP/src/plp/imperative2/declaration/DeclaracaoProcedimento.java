@@ -7,55 +7,41 @@ import plp.imperative1.declaration.Declaracao;
 import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative1.memory.EntradaVaziaException;
+import plp.imperative2.memory.AmbienteCompilacaoImperativa2;
 import plp.imperative2.memory.AmbienteExecucaoImperativa2;
+import plp.imperative2.memory.Procedimento;
 
-public class DeclaracaoProcedimento extends Declaracao {
+public class DeclaracaoProcedimento extends Declaracao<Id, DefProcedimento> {
 
-	private Id id;
-	private DefProcedimento defProcedimento;
+	private ListaDeclaracaoParametro parametrosFormais;
 
-	public DeclaracaoProcedimento(Id id, DefProcedimento defProcedimento) {
-		super();
-		this.id = id;
-		this.defProcedimento = defProcedimento;
+	public DeclaracaoProcedimento(Id nome, DefProcedimento defProcedimento) {
+		super(nome, defProcedimento);
+		this.parametrosFormais = defProcedimento.getParametrosFormais();
 	}
 
-	@Override
 	public AmbienteExecucaoImperativa elabora(
 			AmbienteExecucaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		((AmbienteExecucaoImperativa2) ambiente).mapProcedimento(getId(),
-				getDefProcedimento());
+		((AmbienteExecucaoImperativa2) ambiente).mapProcedimento(parametro1,new Procedimento(parametrosFormais, parametro2));
 		return ambiente;
 	}
 
-	private Id getId() {
-		return this.id;
-	}
-
-	@Override
-	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
+	public boolean checaTipo(AmbienteCompilacaoImperativa amb)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
 		boolean resposta;
-
-		ambiente.map(id, defProcedimento.getTipo());
-
-		ListaDeclaracaoParametro parametrosFormais = getDefProcedimento()
-				.getParametrosFormais();
+		AmbienteCompilacaoImperativa2 ambiente = (AmbienteCompilacaoImperativa2) amb;
 		if (parametrosFormais.checaTipo(ambiente)) {
+			ambiente.mapParametrosProcedimento(parametro1, parametrosFormais);
 			ambiente.incrementa();
-			ambiente = parametrosFormais.elabora(ambiente);
-			resposta = getDefProcedimento().getComando().checaTipo(ambiente);
+			ambiente = parametrosFormais.declaraParametro(ambiente);
+			resposta = parametro2.getComando().checaTipo(ambiente);
 			ambiente.restaura();
 		} else {
 			resposta = false;
 		}
 		return resposta;
-	}
-
-	private DefProcedimento getDefProcedimento() {
-		return this.defProcedimento;
 	}
 }

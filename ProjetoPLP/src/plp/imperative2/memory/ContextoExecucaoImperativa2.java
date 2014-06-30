@@ -1,43 +1,47 @@
 package plp.imperative2.memory;
 
+import java.util.HashMap;
+import java.util.Stack;
+
 import plp.expressions2.expression.Id;
-import plp.expressions2.memory.Contexto;
-import plp.expressions2.memory.VariavelJaDeclaradaException;
-import plp.expressions2.memory.VariavelNaoDeclaradaException;
+import plp.expressions2.expression.Valor;
 import plp.imperative1.memory.ContextoExecucaoImperativa;
 import plp.imperative1.memory.ListaValor;
-import plp.imperative2.declaration.DefProcedimento;
 
 public class ContextoExecucaoImperativa2 extends ContextoExecucaoImperativa
 		implements AmbienteExecucaoImperativa2 {
 
 	/**
-	 * O contexto de procedimentos faz as vezes de um contexto de execução que
-	 * armazena apenas procedimentos.
+	 * A pilha de blocos de contexto.
 	 */
-	private Contexto<DefProcedimento> contextoProcedimentos;
+	private Stack<HashMap<Id, Procedimento>> pilhaProcedimento;
+
+	/**
+	 * A pilha de blocos de contexto.
+	 */
+	private ListaValor entrada;
+
+	/**
+	 * A pilha de blocos de contexto.
+	 */
+	private ListaValor saida;
 
 	/**
 	 * Construtor da classe.
 	 */
 	public ContextoExecucaoImperativa2(ListaValor entrada) {
 		super(entrada);
-//		contextoProcedimentos = new Contexto<DefProcedimento>();
-/** 
- * AJEITAR ESSE PARANAEU
- * */
+		pilhaProcedimento = new Stack<HashMap<Id, Procedimento>>();
 	}
 
-	@Override
 	public void incrementa() {
 		super.incrementa();
-		this.contextoProcedimentos.incrementa();
+		pilhaProcedimento.push(new HashMap<Id, Procedimento>());
 	}
 
-	@Override
 	public void restaura() {
 		super.restaura();
-		this.contextoProcedimentos.restaura();
+		pilhaProcedimento.pop();
 	}
 
 	/**
@@ -46,11 +50,11 @@ public class ContextoExecucaoImperativa2 extends ContextoExecucaoImperativa
 	 * @exception ProcedimentoJaDeclaradoException
 	 *                se já existir um mapeamento do identificador nesta tabela.
 	 */
-	public void mapProcedimento(Id idArg, DefProcedimento procedimentoId)
+	public void mapProcedimento(Id idArg, Procedimento procedimentoId)
 			throws ProcedimentoJaDeclaradoException {
-		try {
-			this.contextoProcedimentos.map(idArg, procedimentoId);
-		} catch (VariavelJaDeclaradaException e) {
+
+		HashMap<Id, Procedimento> aux = pilhaProcedimento.peek();
+		if (aux.put(idArg, procedimentoId) != null) {
 			throw new ProcedimentoJaDeclaradoException(idArg);
 		}
 
@@ -63,13 +67,30 @@ public class ContextoExecucaoImperativa2 extends ContextoExecucaoImperativa
 	 *                se não existir nenhum procedimento mapeado ao id dado
 	 *                nesta tabela.
 	 */
-	public DefProcedimento getProcedimento(Id idArg)
+	public Procedimento getProcedimento(Id idArg)
 			throws ProcedimentoNaoDeclaradoException {
-		try {
-			return this.contextoProcedimentos.get(idArg);
-		} catch (VariavelNaoDeclaradaException e) {
+		Procedimento result = null;
+		Stack<HashMap<Id, Procedimento>> auxStack = new Stack<HashMap<Id, Procedimento>>();
+		while (result == null && !pilhaProcedimento.empty()) {
+			HashMap<Id, Procedimento> aux = pilhaProcedimento.pop();
+			auxStack.push(aux);
+			result = aux.get(idArg);
+		}
+		while (!auxStack.empty()) {
+			pilhaProcedimento.push(auxStack.pop());
+		}
+		if (result == null) {
 			throw new ProcedimentoNaoDeclaradoException(idArg);
 		}
 
+		return result;
+	}
+	
+	public Object clone(){
+		ContextoExecucaoImperativa2 contexto = new ContextoExecucaoImperativa2(getEntrada());
+		contexto.pilhaProcedimento = (Stack<HashMap<Id, Procedimento>>) this.pilhaProcedimento.clone(); 
+		contexto.setPilha((Stack<HashMap<Id, Valor>>) getPilha().clone());
+		contexto.setSaida(getSaida());
+		return contexto;
 	}
 }
