@@ -49,7 +49,7 @@ public class TryCanalSend implements Expressao{
 					args = amb.get(id);
 				}
 				((AmbienteExecucaoImperativa) amb).changeValor(id, exp.avaliar(amb));
-				return new ValorBooleano(true);
+				return Constantes.booleanoTrue;
 			}
 			finally{
 				id.isEmpty.signalAll();
@@ -57,17 +57,20 @@ public class TryCanalSend implements Expressao{
 			}
 		}
 		else 
-			return new ValorBooleano(false);
+			return Constantes.booleanoFalse;
 	}
 
 	@Override
 	public boolean checaTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+		amb.get(id);
 		return true;
-	}
+	}	
 	@Override
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+		((AmbienteCompilacaoImperativa) amb).incrementaCanal();
+		((AmbienteCompilacaoImperativa) amb).mapCanal(id, exp.getTipo(amb));
 		return TipoPrimitivo.BOOLEANO;
 	}
 

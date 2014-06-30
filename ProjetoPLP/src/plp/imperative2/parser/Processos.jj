@@ -142,6 +142,7 @@ TOKEN : /* TOKENS DA EXTENSAO*/
 |   < SEND: "send" >
 |   < GET: "get" >
 |   < TRY: "try" >
+|   < PEEK: "peek" >
 
 }
 
@@ -588,6 +589,14 @@ TryCanalSend PTryCanalSend() :
 	{return new TryCanalSend(id,exp);}
 }
 
+CanalPeek PCanalPeek() :
+{
+	IdCanal id;
+}
+{
+  	<PEEK> id = PIdCanal()
+	{return new CanalPeek(id);}
+}
 
 CanalGet PCanalGet() :
 {
@@ -708,6 +717,8 @@ Expressao PExpressao() :
 	  		retorno = PExpBinaria()
 	  | LOOKAHEAD( <GET> id = PIdCanal() )
 	  	retorno = PCanalGet()
+	  | LOOKAHEAD( <PEEK> id = PIdCanal() )
+	  	retorno = PCanalPeek()
 	  | LOOKAHEAD( <TRY> <GET> id = PIdCanal() )
 	  	retorno = PTryCanalGet()
 	  | LOOKAHEAD( <TRY> <SEND> id = PIdCanal() )

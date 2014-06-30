@@ -11,6 +11,7 @@ import plp.expressions2.memory.AmbienteCompilacao;
 import plp.expressions2.memory.AmbienteExecucao;
 import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
+import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative2.util.Constantes;
 
@@ -68,7 +69,9 @@ public class TryCanalGet implements Expressao{
 	@Override
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		return TipoPrimitivo.BOOLEANO;
+		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
+		((AmbienteCompilacaoImperativa) amb).restauraCanal();
+		return args;
 	}
 
 

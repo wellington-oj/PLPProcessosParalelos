@@ -5,15 +5,13 @@ import java.util.concurrent.TimeUnit;
 import plp.expressions1.util.Tipo;
 import plp.expressions2.expression.Expressao;
 import plp.expressions2.expression.Valor;
-import plp.imperative1.memory.AmbienteCompilacaoImperativa;
-import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.expressions2.memory.AmbienteCompilacao;
 import plp.expressions2.memory.AmbienteExecucao;
 import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
-import plp.imperative2.util.Constantes;
+import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 
-public class CanalGet implements Expressao{
+public class CanalPeek implements Expressao{
 
 	IdCanal id;
 	
@@ -25,32 +23,14 @@ public class CanalGet implements Expressao{
 		this.id = id;
 	}
 
-	public CanalGet(IdCanal id) {
+	public CanalPeek(IdCanal id) {
 		this.id = id;
 	}
 
 	@Override
 	public Valor avaliar(AmbienteExecucao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		
-		id.lock.lock();
-		try{
-			Valor args = amb.get(id);
-			while(args.equals(Constantes.stringNull)){
-				try {
-					id.isEmpty.await(100,TimeUnit.MILLISECONDS);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				args = amb.get(id);
-			}
-			return args;
-		}
-		finally{
-			((AmbienteExecucaoImperativa) amb).changeValor(id, Constantes.stringNull);
-			id.isEmpty.signalAll();
-			id.lock.unlock();
-		}
+			return amb.get(id);
 	}
 
 	@Override
@@ -65,10 +45,6 @@ public class CanalGet implements Expressao{
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
-		((AmbienteCompilacaoImperativa) amb).restauraCanal();
 		return args;
 	}
-
-
-
 }

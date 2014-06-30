@@ -11,15 +11,6 @@ public class IdCanal extends Id{
 	ReentrantLock lock;
 	Condition isEmpty;
 	Condition isFull;
-	Tipo tipoCanal;
-	
-	public Tipo getTipoCanal() {
-		return tipoCanal;
-	}
-
-	public void setTipoCanal(Tipo tipoCanal) {
-		this.tipoCanal = tipoCanal;
-	}
 
 	public IdCanal(String strName) {
 		super(strName);

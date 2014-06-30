@@ -49,12 +49,6 @@ public class Atribuicao implements Comando {
 	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente) 
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException{
 
-		if(expressao instanceof CanalGet){
-			boolean args = id.getTipo(ambiente).equals(ambiente.getCanal(((CanalGet) expressao).getId()));
-			((AmbienteCompilacaoImperativa) ambiente).restauraCanal();
-			return expressao.checaTipo(ambiente) && args;
-		}
-
 		return expressao.checaTipo(ambiente) &&
 				id.getTipo(ambiente).equals(expressao.getTipo(ambiente));
 	}
