@@ -7,6 +7,8 @@ import plp.expressions2.expression.Id;
 import plp.expressions2.expression.Valor;
 import plp.imperative1.memory.ContextoExecucaoImperativa;
 import plp.imperative1.memory.ListaValor;
+import plp.imperative2.extensao.ControleCanal;
+import plp.imperative2.extensao.IdCanal;
 
 public class ContextoExecucaoImperativa2 extends ContextoExecucaoImperativa
 		implements AmbienteExecucaoImperativa2 {
@@ -90,6 +92,7 @@ public class ContextoExecucaoImperativa2 extends ContextoExecucaoImperativa
 		ContextoExecucaoImperativa2 contexto = new ContextoExecucaoImperativa2(getEntrada());
 		contexto.pilhaProcedimento = (Stack<HashMap<Id, Procedimento>>) this.pilhaProcedimento.clone(); 
 		contexto.setPilha((Stack<HashMap<Id, Valor>>) getPilha().clone());
+		contexto.setPilhaCanal((Stack<HashMap<IdCanal, ControleCanal>>) getPilhaCanal().clone());
 		contexto.setSaida(getSaida());
 		return contexto;
 	}

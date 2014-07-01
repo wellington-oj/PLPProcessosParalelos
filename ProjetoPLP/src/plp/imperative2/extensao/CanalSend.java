@@ -3,14 +3,12 @@ package plp.imperative2.extensao;
 import java.util.concurrent.TimeUnit;
 
 import plp.expressions2.expression.Expressao;
-import plp.expressions2.expression.Valor;
 import plp.expressions2.memory.IdentificadorJaDeclaradoException;
 import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
 import plp.imperative1.command.Comando;
 import plp.imperative1.memory.AmbienteCompilacaoImperativa;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 import plp.imperative1.memory.EntradaVaziaException;
-import plp.imperative2.util.Constantes;
 
 public class CanalSend implements Comando{
 
@@ -22,29 +20,41 @@ public class CanalSend implements Comando{
 		this.exp = exp;
 	}
 
+	
+//	private boolean estaCheio(){
+//		return !args.equals(Constantes.stringNull)
+//		return !id.getVazio();
+//	}
+//	
+//	private void setCanalVazio(){
+//		return !args.equals(Constantes.stringNull)
+//		id.setVazio(false);;
+//	}
+	
 	@Override
 	public AmbienteExecucaoImperativa executar(
-			AmbienteExecucaoImperativa ambiente)
+			AmbienteExecucaoImperativa amb)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
 		
-		id.lock.lock();
+		ControleCanal args = ((AmbienteExecucaoImperativa) amb).getCanal(id);
+		args.lock.lock();
 		try{
-			Valor args = ambiente.get(id);
-			while(!args.equals(Constantes.stringNull)){
+			while(!args.getVazio()){
 				try {
-					id.isEmpty.await(100,TimeUnit.MILLISECONDS);
+					args.isEmpty.await(100,TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				args = ambiente.get(id);
 			}
-			ambiente.changeValor(id, exp.avaliar(ambiente));
-			return ambiente;
+			amb.changeValor(id, exp.avaliar(amb));
+			return amb;
 		}
 		finally{
-			id.isEmpty.signalAll();
-			id.lock.unlock();
+//			setCanalVazio();
+			args.setVazio(false);
+			args.isEmpty.signalAll();
+			args.lock.unlock();
 		}
 	}
 
@@ -52,9 +62,11 @@ public class CanalSend implements Comando{
 	public boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
 			throws IdentificadorJaDeclaradoException,
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
-		ambiente.incrementaCanal();
-		ambiente.mapCanal(id, exp.getTipo(ambiente));
-		return true;
+		return exp.checaTipo(ambiente) &&
+				id.getTipo(ambiente).equals(exp.getTipo(ambiente));
+//		ambiente.incrementaCanal();
+//		ambiente.mapCanal(id, exp.getTipo(ambiente));
+//		return true;
 	}
 
 }

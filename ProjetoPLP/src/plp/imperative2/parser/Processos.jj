@@ -143,6 +143,7 @@ TOKEN : /* TOKENS DA EXTENSAO*/
 |   < GET: "get" >
 |   < TRY: "try" >
 |   < PEEK: "peek" >
+|   < SWAP: "swap" >
 
 }
 
@@ -564,10 +565,21 @@ IdCanal PIdCanal() :
 DeclaracaoCanal PDeclaracaoCanal() :
 {
 	IdCanal id;
+	Expressao exp;
 }
 {
-  	<CANAL> id = PIdCanal()
-	{return new DeclaracaoCanal(id);}
+  	<CANAL> id = PIdCanal() exp = PExpressao()
+	{return new DeclaracaoCanal(id,exp);}
+}
+
+CanalSwap PCanalSwap() :
+{
+	IdCanal id;
+	Expressao exp;
+}
+{
+  	<SWAP> id = PIdCanal() exp = PExpressao()
+	{return new CanalSwap(id,exp);}
 }
 
 CanalSend PCanalSend() :
@@ -719,6 +731,8 @@ Expressao PExpressao() :
 	  	retorno = PCanalGet()
 	  | LOOKAHEAD( <PEEK> id = PIdCanal() )
 	  	retorno = PCanalPeek()
+	  | LOOKAHEAD( <SWAP> id = PIdCanal() exp = PExpressao())
+	  	retorno = PCanalSwap()
 	  | LOOKAHEAD( <TRY> <GET> id = PIdCanal() )
 	  	retorno = PTryCanalGet()
 	  | LOOKAHEAD( <TRY> <SEND> id = PIdCanal() )

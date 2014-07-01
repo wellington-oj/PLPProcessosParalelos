@@ -29,27 +29,37 @@ public class CanalGet implements Expressao{
 		this.id = id;
 	}
 
+//	private boolean estaVazio(){
+//		return !args.equals(Constantes.stringNull);
+//		return id.getVazio();
+//	}
+	
+//	private void setCanalVazio(){
+//		id.setVazio(true);
+//		((AmbienteExecucaoImperativa) amb).changeValor(id, Constantes.stringNull);
+//	}
+	
 	@Override
 	public Valor avaliar(AmbienteExecucao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		
-		id.lock.lock();
+		ControleCanal args = ((AmbienteExecucaoImperativa) amb).getCanal(id);
+		args.lock.lock();
 		try{
-			Valor args = amb.get(id);
-			while(args.equals(Constantes.stringNull)){
+			while(args.getVazio()){
 				try {
-					id.isEmpty.await(100,TimeUnit.MILLISECONDS);
+					args.isEmpty.await(100,TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				args = amb.get(id);
 			}
-			return args;
+			Valor retorno = amb.get(id);
+			return retorno;
 		}
 		finally{
-			((AmbienteExecucaoImperativa) amb).changeValor(id, Constantes.stringNull);
-			id.isEmpty.signalAll();
-			id.lock.unlock();
+			args.setVazio(true);
+			args.isEmpty.signalAll();
+			args.lock.unlock();
 		}
 	}
 
@@ -64,9 +74,10 @@ public class CanalGet implements Expressao{
 	@Override
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
-		((AmbienteCompilacaoImperativa) amb).restauraCanal();
-		return args;
+		return amb.get(id);
+//		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
+//		((AmbienteCompilacaoImperativa) amb).restauraCanal();
+//		return args;
 	}
 
 

@@ -1,24 +1,27 @@
 package plp.imperative2.extensao;
-import plp.expressions2.memory.IdentificadorJaDeclaradoException;
-import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
-import plp.imperative2.command.ListaExpressao;
-import plp.imperative1.command.*;
-import plp.imperative1.memory.AmbienteCompilacaoImperativa;
-import plp.imperative1.memory.AmbienteExecucaoImperativa;
-import plp.imperative1.memory.EntradaVaziaException;
 
-public abstract class ControleCanal implements Comando{
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
-	@Override
-	public abstract AmbienteExecucaoImperativa executar(
-			AmbienteExecucaoImperativa ambiente)
-					throws IdentificadorJaDeclaradoException,
-					IdentificadorNaoDeclaradoException, EntradaVaziaException ;
+public class ControleCanal{
 
-	@Override
-	public abstract boolean checaTipo(AmbienteCompilacaoImperativa ambiente)
-			throws IdentificadorJaDeclaradoException,
-			IdentificadorNaoDeclaradoException, EntradaVaziaException;
+	ReentrantLock lock;
+	Condition isEmpty;
+	Condition isFull;
+	boolean vazio = false;
+	
+	public boolean getVazio() {
+		return vazio;
+	}
 
+	public void setVazio(boolean vazio) {
+		this.vazio = vazio;
+	}
+	
+	public ControleCanal() {
+		lock = new ReentrantLock();
+		isEmpty = lock.newCondition();
+		isFull = lock.newCondition();
+	}
 
 }

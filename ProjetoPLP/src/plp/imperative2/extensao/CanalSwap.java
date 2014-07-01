@@ -9,21 +9,16 @@ import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
 import plp.imperative1.memory.AmbienteExecucaoImperativa;
 
-public class CanalPeek implements Expressao{
+public class CanalSwap implements Expressao{
 
 	IdCanal id;
+	Expressao exp;
 
-	public IdCanal getId() {
-		return id;
-	}
-
-	public void setId(IdCanal id) {
+	public CanalSwap(IdCanal id, Expressao exp) {
 		this.id = id;
+		this.exp = exp;
 	}
 
-	public CanalPeek(IdCanal id) {
-		this.id = id;
-	}
 
 	@Override
 	public Valor avaliar(AmbienteExecucao amb)
@@ -32,7 +27,9 @@ public class CanalPeek implements Expressao{
 		ControleCanal args = ((AmbienteExecucaoImperativa) amb).getCanal(id);
 		args.lock.lock();
 		try{
-			return amb.get(id);
+			Valor retorno = amb.get(id);
+			((AmbienteExecucaoImperativa) amb).changeValor(id, exp.avaliar(amb));
+			return retorno;
 		}
 		finally{
 			args.lock.unlock();
@@ -42,16 +39,13 @@ public class CanalPeek implements Expressao{
 	@Override
 	public boolean checaTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		boolean result = true;
-		amb.get(id); // se estiver no ambiente, entao esta ok.
-		return result;
-	}
-
+		amb.get(id);
+		return true;
+	}	
 	@Override
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-		return amb.get(id);
-//		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
-//		return args;
+		return exp.getTipo(amb);
 	}
+
 }

@@ -32,6 +32,9 @@ public class ComandoDeclaracao implements Comando {
         ambiente.incrementa();
         ambiente = comando.executar(declaracao.elabora(ambiente));
         ambiente.restaura();
+        if(ambiente.pilhaCanalTemAlgo()){
+//        	ambiente.restauraCanal();
+        }
         return ambiente;
     }
 

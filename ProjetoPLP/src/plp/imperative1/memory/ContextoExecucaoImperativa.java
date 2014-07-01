@@ -6,11 +6,18 @@ import java.util.Stack;
 import plp.expressions2.expression.Id;
 import plp.expressions2.expression.Valor;
 import plp.expressions2.memory.ContextoExecucao;
+import plp.expressions2.memory.IdentificadorJaDeclaradoException;
+import plp.expressions2.memory.IdentificadorNaoDeclaradoException;
+import plp.expressions2.memory.VariavelJaDeclaradaException;
 import plp.expressions2.memory.VariavelNaoDeclaradaException;
+import plp.imperative2.extensao.IdCanal;
+import plp.imperative2.extensao.ControleCanal;
 
 public class ContextoExecucaoImperativa extends ContextoExecucao 
 	implements AmbienteExecucaoImperativa {
 
+
+	public Stack<HashMap<IdCanal, ControleCanal>> pilhaCanal;	
     /**
      * A pilha de blocos de contexto.
      */    
@@ -27,7 +34,8 @@ public class ContextoExecucaoImperativa extends ContextoExecucao
     public ContextoExecucaoImperativa(ListaValor entrada){
     	super();
         this.entrada = entrada;
-        this.saida = new ListaValor();        
+        this.saida = new ListaValor(); 
+        this.pilhaCanal = new Stack<>();
     }
    
     public Valor read() throws EntradaVaziaException {
@@ -75,6 +83,62 @@ public class ContextoExecucaoImperativa extends ContextoExecucao
 		}
     }
     
+    
+	@Override
+	public void mapCanal(IdCanal idArg, ControleCanal valor)
+			throws VariavelJaDeclaradaException {
+		try {
+			HashMap<IdCanal,ControleCanal> aux =  pilhaCanal.peek();
+	    	if (aux.put(idArg, valor) != null) {
+	    		throw new IdentificadorJaDeclaradoException();
+	    	}
+		} catch (IdentificadorJaDeclaradoException e) {
+			throw new VariavelJaDeclaradaException (idArg);
+		}
+		
+	}
+
+	@Override
+	public ControleCanal getCanal(IdCanal idArg) throws VariavelNaoDeclaradaException {
+		try {
+			ControleCanal result = null;
+			Stack<HashMap<IdCanal,ControleCanal>> auxStack = new Stack<HashMap<IdCanal,ControleCanal>>();
+			while (result == null && !pilhaCanal.empty()) {
+				HashMap<IdCanal,ControleCanal> aux = pilhaCanal.pop();
+				auxStack.push(aux);
+				result = (ControleCanal) aux.get(idArg);
+			}
+			while (!auxStack.empty()) {
+				pilhaCanal.push(auxStack.pop());
+			}
+			if (result == null) {
+				throw new IdentificadorNaoDeclaradoException();
+			} 
+			
+			return result;
+		} catch (IdentificadorNaoDeclaradoException e) {
+			throw new VariavelNaoDeclaradaException(idArg);
+		}
+	}
+
+	public Stack<HashMap<IdCanal, ControleCanal>> getPilhaCanal() {
+		return pilhaCanal;
+	}
+
+	public void setPilhaCanal(Stack<HashMap<IdCanal, ControleCanal>> pilhaCanal) {
+		this.pilhaCanal = pilhaCanal;
+	}
+
+	@Override
+	public void incrementaCanal() {
+		pilhaCanal.push(new HashMap<IdCanal,ControleCanal>());
+	}
+
+	@Override
+	public void restauraCanal() {
+		pilhaCanal.pop();
+	}
+    
     public Object clone(){
     	return null;
     }
@@ -89,6 +153,11 @@ public class ContextoExecucaoImperativa extends ContextoExecucao
 
 	public void setSaida(ListaValor saida) {
 		this.saida = saida;
+	}
+
+	@Override
+	public boolean pilhaCanalTemAlgo() {
+		return !pilhaCanal.isEmpty();
 	}
 }
 
