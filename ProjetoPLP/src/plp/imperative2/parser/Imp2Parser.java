@@ -511,6 +511,7 @@ public class Imp2Parser implements Imp2ParserConstants {
         Expressao exp;
       jj_consume_token(CANAL);
       id = PIdCanal();
+      jj_consume_token(ASSIGN);
       exp = PExpressao();
          {if (true) return new DeclaracaoCanal(id,exp);}
     throw new Error("Missing return statement in function");
@@ -2132,6 +2133,7 @@ public class Imp2Parser implements Imp2ParserConstants {
   static private boolean jj_3R_10() {
     if (jj_scan_token(CANAL)) return true;
     if (jj_3R_6()) return true;
+    if (jj_scan_token(ASSIGN)) return true;
     if (jj_3R_7()) return true;
     return false;
   }

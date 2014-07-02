@@ -29,16 +29,6 @@ public class CanalGet implements Expressao{
 		this.id = id;
 	}
 
-//	private boolean estaVazio(){
-//		return !args.equals(Constantes.stringNull);
-//		return id.getVazio();
-//	}
-	
-//	private void setCanalVazio(){
-//		id.setVazio(true);
-//		((AmbienteExecucaoImperativa) amb).changeValor(id, Constantes.stringNull);
-//	}
-	
 	@Override
 	public Valor avaliar(AmbienteExecucao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
@@ -75,9 +65,6 @@ public class CanalGet implements Expressao{
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		return amb.get(id);
-//		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
-//		((AmbienteCompilacaoImperativa) amb).restauraCanal();
-//		return args;
 	}
 
 

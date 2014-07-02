@@ -51,7 +51,5 @@ public class CanalPeek implements Expressao{
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		return amb.get(id);
-//		Tipo args = ((AmbienteCompilacaoImperativa) amb).getCanal(id);
-//		return args;
 	}
 }

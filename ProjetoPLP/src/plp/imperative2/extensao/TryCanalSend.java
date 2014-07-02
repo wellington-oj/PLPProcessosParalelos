@@ -37,17 +37,9 @@ public class TryCanalSend implements Expressao{
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		
 		ControleCanal args = ((AmbienteExecucaoImperativa) amb).getCanal(id);
-		if(args.lock.tryLock()){
+		if(args.getVazio()){
+			args.lock.lock();
 			try{
-				Valor retorno = amb.get(id);
-				while(!args.equals(Constantes.stringNull)){
-					try {
-						args.isEmpty.await(100,TimeUnit.MILLISECONDS);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					retorno = amb.get(id);
-				}
 				((AmbienteExecucaoImperativa) amb).changeValor(id, exp.avaliar(amb));
 				return Constantes.booleanoTrue;
 			}
@@ -69,8 +61,6 @@ public class TryCanalSend implements Expressao{
 	@Override
 	public Tipo getTipo(AmbienteCompilacao amb)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
-//		((AmbienteCompilacaoImperativa) amb).incrementaCanal();
-//		((AmbienteCompilacaoImperativa) amb).mapCanal(id, exp.getTipo(amb));
 		return TipoPrimitivo.BOOLEANO;
 	}
 

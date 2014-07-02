@@ -568,7 +568,7 @@ DeclaracaoCanal PDeclaracaoCanal() :
 	Expressao exp;
 }
 {
-  	<CANAL> id = PIdCanal() exp = PExpressao()
+  	<CANAL> id = PIdCanal() <ASSIGN> exp = PExpressao()
 	{return new DeclaracaoCanal(id,exp);}
 }
 

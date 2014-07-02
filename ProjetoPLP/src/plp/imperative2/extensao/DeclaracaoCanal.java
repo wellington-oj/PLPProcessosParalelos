@@ -27,8 +27,6 @@ public class DeclaracaoCanal extends Declaracao<Id, Expressao>{
 		ambiente.mapCanal(id, new ControleCanal());
 		ambiente.map(parametro1 ,parametro2.avaliar(ambiente));
 		return ambiente;
-//		ambiente.map(getId(),Constantes.stringNull);
-//		return ambiente;
 	}
 
 	@Override
@@ -40,10 +38,6 @@ public class DeclaracaoCanal extends Declaracao<Id, Expressao>{
 			ambiente.map(parametro1, parametro2.getTipo(ambiente));
 		}
 		return result;
-//		ambiente.incrementaCanal();
-//		ambiente.mapCanal(id, TipoPrimitivo.INTEIRO);
-//		ambiente.map(parametro1, Constantes.stringNull.getTipo(ambiente));
-//		return true;
 	}
 
 	public IdCanal getId() {

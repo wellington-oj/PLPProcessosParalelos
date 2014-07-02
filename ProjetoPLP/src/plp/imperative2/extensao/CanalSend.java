@@ -19,17 +19,6 @@ public class CanalSend implements Comando{
 		this.id = id;
 		this.exp = exp;
 	}
-
-	
-//	private boolean estaCheio(){
-//		return !args.equals(Constantes.stringNull)
-//		return !id.getVazio();
-//	}
-//	
-//	private void setCanalVazio(){
-//		return !args.equals(Constantes.stringNull)
-//		id.setVazio(false);;
-//	}
 	
 	@Override
 	public AmbienteExecucaoImperativa executar(
@@ -51,7 +40,6 @@ public class CanalSend implements Comando{
 			return amb;
 		}
 		finally{
-//			setCanalVazio();
 			args.setVazio(false);
 			args.isEmpty.signalAll();
 			args.lock.unlock();
@@ -64,9 +52,6 @@ public class CanalSend implements Comando{
 			IdentificadorNaoDeclaradoException, EntradaVaziaException {
 		return exp.checaTipo(ambiente) &&
 				id.getTipo(ambiente).equals(exp.getTipo(ambiente));
-//		ambiente.incrementaCanal();
-//		ambiente.mapCanal(id, exp.getTipo(ambiente));
-//		return true;
 	}
 
 }
